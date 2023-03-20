@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id Int @default(autoincrement()) @id
+  name String
+  status Int
+  body String
+  slug String
+  author Member @relation(fields: [authorId], references: [id])
+  authorId Int
+  views String
+  tags Post_Tag[]
+  favoriteMembers Favorite[]
+  comments Comment[]
+}
+
+model Post_Tag {
+  post Post @relation(fields: [postId], references: [id])
+  postId Int
+  tag Tag @relation(fields: [tagId], references: [id])
+  tagId Int
+  @@id([postId, tagId])
+}
+
+model Tag {
+  id Int @default(autoincrement()) @id
+  name String
+  posts Post_Tag[]
+  Games Game_Tag[]
+}
+
+model Game_Tag {
+  tag Tag @relation(fields: [tagId], references: [id])
+  tagId Int
+  game Game @relation(fields: [gameId], references: [id])
+  gameId Int
+  @@id([tagId, gameId])
+}
+
+model Game {
+  id Int @default(autoincrement()) @id
+  name String
+  Tags Game_Tag[]
+  administrator Member @relation(fields: [memberId], references: [id])
+  memberId Int
+}
+
+
+model Member {
+  id Int @default(autoincrement()) @id
+  name String 
+  is_admin Boolean
+  email String @unique
+  password String
+  post Post[]
+  favoritePost Favorite[]
+  adminGame Game[]
+  comments Comment[]
+}
+
+model Favorite {
+  id Int @default(autoincrement()) @id
+  member Member @relation(fields: [memberId], references: [id])
+  memberId Int
+  post Post @relation(fields: [postId], references: [id])
+  postId Int
+}
+
+model Admin {
+  id Int @default(autoincrement()) @id
+  email String
+  password String
+  name String
+}
+
+model Comment {
+  id Int @default(autoincrement()) @id
+  member Member @relation(fields: [member_id], references: [id])
+  member_id Int
+  post Post @relation(fields: [post_id], references: [id])
+  post_id Int
+  body String
+}
