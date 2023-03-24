@@ -7,7 +7,7 @@ export class MembersController {
 
   @Get('getAllUsers')
   getAllUsers() {
-    const users = this.membersService.getAllUsers
+    const users = this.membersService.getAllUsers()
     return users
   }
 

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service' 
 
 @Injectable()
 export class MembersService {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaService) {}
 
   async getAllUsers() {
     const users = await this.prisma.member.findMany()
