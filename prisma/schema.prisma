@@ -19,12 +19,12 @@ model Post {
   author Member @relation(fields: [authorId], references: [id])
   authorId Int
   views String
-  tags Post_Tag[]
+  tags PostTag[]
   favoriteMembers Favorite[]
   comments Comment[]
 }
 
-model Post_Tag {
+model PostTag {
   post Post @relation(fields: [postId], references: [id])
   postId Int
   tag Tag @relation(fields: [tagId], references: [id])
@@ -35,11 +35,11 @@ model Post_Tag {
 model Tag {
   id Int @default(autoincrement()) @id
   name String
-  posts Post_Tag[]
-  Games Game_Tag[]
+  posts PostTag[]
+  Games GameTag[]
 }
 
-model Game_Tag {
+model GameTag {
   tag Tag @relation(fields: [tagId], references: [id])
   tagId Int
   game Game @relation(fields: [gameId], references: [id])
@@ -50,7 +50,7 @@ model Game_Tag {
 model Game {
   id Int @default(autoincrement()) @id
   name String
-  Tags Game_Tag[]
+  Tags GameTag[]
   administrator Member @relation(fields: [memberId], references: [id])
   memberId Int
 }
