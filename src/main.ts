@@ -5,12 +5,11 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config: any = new DocumentBuilder()
-  config.setTitle('Walkthrough website')
-  config.setDescription('A website which can share your walkthrough.')
-  config.setVersion('1.0')
-  config.addTag('walkthrough')
-  config.build()
+  const config = new DocumentBuilder()
+  .setTitle('Walkthrough website')
+  .setDescription('A website which can share your walkthrough')
+  .setVersion('1.0')
+  .build();
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('api', app, document)
 
