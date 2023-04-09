@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { MembersService } from '../service/members.service';
-import { ApiTags, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateMemberDto, UpdateMemberByIdDto } from '../dto/member.dto';
 import { Prisma } from '@prisma/client';
 
@@ -13,6 +13,7 @@ export class MembersController {
   @ApiResponse({ status: 200, description: 'Get members successfully.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   getAllMembers() {
+    console.log('hello')
     const members = this.membersService.getAllMembers()
     return members
   }
@@ -47,7 +48,6 @@ export class MembersController {
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   updateMemberById(@Body() member: UpdateMemberByIdDto, @Param('id') id: string ) {
     const user = this.membersService.updateMemberById(id, member)
-    console.log(user);
     return user
   }
 

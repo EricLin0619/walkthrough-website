@@ -9,6 +9,7 @@ async function bootstrap() {
   .setTitle('Walkthrough website')
   .setDescription('A website which can share your walkthrough')
   .setVersion('1.0')
+  .addBearerAuth()
   .build();
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('api', app, document)
