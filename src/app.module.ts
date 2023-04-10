@@ -1,13 +1,15 @@
-import { Module } from '@nestjs/common';
-import { MembersModule } from './members/members.module';
+import { Module, Global } from '@nestjs/common';
+import { UsersModule } from './members/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
 
+@Global()
 @Module({
-  imports: [MembersModule, PrismaModule, AuthModule],
+  imports: [UsersModule, PrismaModule, AuthModule],
   controllers: [],
   providers: [],
+  exports: [PrismaModule],
 })
 export class AppModule {}
 // the root module
