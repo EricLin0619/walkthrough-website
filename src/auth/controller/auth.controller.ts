@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard, LocalAuthGuard } from '../guard/jwt-auth.guard';
@@ -13,9 +13,17 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: 201, description: 'The member has been successfully logged in.'})
-  async login(@Body() loginData: LoginDto) {
-    return this.authservice.login(loginData);
+  @ApiResponse({ status: 201, description: 'The user has been successfully logged in.'})
+  async login( @Request() req ) {
+    return this.authservice.login(req.user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async profile( @Request() req ) {
+    // console.log(req)
+    return req.user;
   }
 
   @ApiBearerAuth()

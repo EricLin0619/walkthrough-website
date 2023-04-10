@@ -1,7 +1,7 @@
-import { Prisma, Member } from "@prisma/client"
+import { Prisma, User } from "@prisma/client"
 import { ApiProperty } from "@nestjs/swagger"
 
-export class UpdateMemberByIdDto {
+export class UpdateUserByIdDto {
   @ApiProperty()
   name?: string
 
@@ -12,7 +12,7 @@ export class UpdateMemberByIdDto {
   password?: string
 }
 
-export class CreateMemberDto{
+export class CreateUserDto{
   @ApiProperty()
   name: string
 
