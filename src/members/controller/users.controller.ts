@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards, ParseBoolPipe } from '@nestjs/common';
 import { UsersService } from '../service/users.service';
-import { ApiTags, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBody, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { CreateUserDto, UpdateUserByIdDto } from '../dto/user.dto';
 import { Prisma } from '@prisma/client';
 
@@ -12,24 +12,25 @@ export class UsersController {
   @Get('/')
   @ApiResponse({ status: 200, description: 'Get users successfully.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
-  getAllusers() {
-    const users = this.usersService.getAllUsers()
+  @ApiResponse({ status: 404, description: 'Users Not Found .'})
+  @ApiQuery({ name: 'name', required: false, description: 'name of user' })
+  @ApiQuery({ name: 'eamil', required: false, description: 'eamil of user' })
+  @ApiQuery({ name: 'is_admin', required: false, description: 'is_admin of user' })
+  getAllusers(
+    @Query('name') name: string,
+    @Query('eamil') eamil: string,
+    @Query('is_admin') is_admin: boolean, 
+  ) {
+    const users = this.usersService.getUsers(name, eamil, is_admin)
     return users
   }
 
   @Get(':id')
   @ApiResponse({ status: 200, description: 'Get user successfully.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 404, description: 'User Not Found .'})
   getuserById(@Param('id') id: string ) {
     const user = this.usersService.getUserById(id)
-    return user
-  }
-
-  @Get(':name')
-  @ApiResponse({ status: 200, description: 'Get user successfully.'})
-  @ApiResponse({ status: 403, description: 'Forbidden.'})
-  getuserByName(@Param('name') name: string ) {
-    const user = this.usersService.getUserByName(name)
     return user
   }
 
