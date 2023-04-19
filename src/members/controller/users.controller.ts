@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards, ParseBoolPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { UsersService } from '../service/users.service';
 import { ApiTags, ApiResponse, ApiBody, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { CreateUserDto, UpdateUserByIdDto } from '../dto/user.dto';
@@ -29,7 +29,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Get user successfully.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   @ApiResponse({ status: 404, description: 'User Not Found .'})
-  getuserById(@Param('id') id: string ) {
+  getuserById(@Param('id', ParseIntPipe) id: number ) {
     const user = this.usersService.getUserById(id)
     return user
   }
@@ -46,7 +46,7 @@ export class UsersController {
   @ApiBody({ type: UpdateUserByIdDto })
   @ApiResponse({ status: 201, description: 'The user has been successfully updated.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
-  updateuserById(@Body() User: UpdateUserByIdDto, @Param('id') id: string ) {
+  updateuserById(@Body() User: UpdateUserByIdDto, @Param('id', ParseIntPipe) id: number ) {
     const user = this.usersService.updateUserById(id, User)
     return user
   }
@@ -54,7 +54,7 @@ export class UsersController {
   @Delete(':id')
   @ApiResponse({ status: 201, description: 'The user has been successfully deleted.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
-  deleteuserById(@Param('id') id: string) {
+  deleteuserById(@Param('id', ParseIntPipe) id: number) {
     const result = this.usersService.deleteUserById(id)
     return result
   }

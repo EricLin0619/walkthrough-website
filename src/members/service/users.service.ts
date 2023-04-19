@@ -20,8 +20,16 @@ export class UsersService {
     return users
   }
 
-  async getUserById(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: parseInt(id) } })
+  async getUserById(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } })
+    if (!user) {
+      throw new UserNotFoundError()
+    }
+    return user
+  }
+
+  async getUserByName(name: string) {
+    const user = await this.prisma.user.findFirst({ where: { name } })
     if (!user) {
       throw new UserNotFoundError()
     }
@@ -38,9 +46,9 @@ export class UsersService {
     return result
   }
 
-  async updateUserById(id: string, user: UpdateUserByIdDto) {
+  async updateUserById(id: number, user: UpdateUserByIdDto) {
     const result = await this.prisma.user.update({
-      where:{ id: Number(id) },
+      where:{ id },
       data: { name: user.name,
               is_admin: user.is_admin,
               password: user.password,
@@ -49,8 +57,8 @@ export class UsersService {
     return result
   }
 
-  async deleteUserById(id: string) {
-    const result = this.prisma.user.delete({ where: { id: Number(id) } })
+  async deleteUserById(id: number) {
+    const result = this.prisma.user.delete({ where: { id } })
     return result
   }
 }
