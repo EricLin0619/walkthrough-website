@@ -38,7 +38,7 @@ export class UsersService {
 
   async createUser(user: Prisma.UserCreateInput) {
     const userExist = await this.prisma.user.findFirst({where: {email: user.email}})
-    if (!userExist){
+    if (userExist){
       throw new UserExistedError()
     }
     user.password = await bcrypt.hash(user.password, 10)
