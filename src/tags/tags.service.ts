@@ -7,8 +7,8 @@ import { TagsNotFoundError } from './error';
 export class TagsService {
   constructor(private prisma: PrismaService) {}
 
-  async getTags() {
-    const result = await this.prisma.tag.findMany()
+  async getTags(name: string) {
+    const result = await this.prisma.tag.findMany({ where: { name: { contains: name } }})
     if (result.length === 0) {
       throw new TagsNotFoundError()
     }

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { UsersService } from '../service/users.service';
-import { ApiTags, ApiResponse, ApiBody, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBody, ApiBearerAuth, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { CreateUserDto, UpdateUserByIdDto } from '../dto/user.dto';
 import { Prisma } from '@prisma/client';
 
@@ -32,6 +32,25 @@ export class UsersController {
   getuserById(@Param('id', ParseIntPipe) id: number ) {
     const user = this.usersService.getUserById(id)
     return user
+  }
+
+  @Get('/posts/:id')
+  @ApiResponse({ status: 200, description: 'Get posts successfully.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 404, description: 'Post Not Found .'})
+  @ApiParam({ name: 'id', required: true, description: 'id of user' })
+  getPostsById(@Param('id', ParseIntPipe) id: number) {
+    const posts = this.usersService.getPostsByUserId(id)
+    return posts
+  }
+
+  @Get('/favorite/:id')
+  @ApiResponse({ status: 200, description: 'Get favorite posts successfully.'})
+  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiResponse({ status: 404, description: 'Favorite posts Not Found .'})
+  getFavoritePostsById(@Param('id', ParseIntPipe) id: number) {
+    const posts = this.usersService.getFavoritePostsByUserId(id)
+    return posts
   }
 
   @Post('/')

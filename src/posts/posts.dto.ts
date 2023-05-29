@@ -22,4 +22,12 @@ export class CreatePostDto {
   authorId: number;
 }
 
-export class updatePostDto extends CreatePostDto {}
+export class UpdatePostDto extends CreatePostDto {
+  @ApiProperty()
+  tags: Array<number>;
+}
+
+export class AddTagsDto {
+  @ApiProperty()
+  tags: Array<string>;
+}

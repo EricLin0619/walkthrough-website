@@ -46,7 +46,7 @@ model User {
   is_admin Boolean
   email String @unique
   password String
-  post Post[]
+  posts Post[]
   favoritePost Favorite[]
   comments Comment[]
   permissionGame Game[]

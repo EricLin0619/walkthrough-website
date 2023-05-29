@@ -1,5 +1,5 @@
-import { Controller, Delete, Get, Post, Body, Param, ParseIntPipe } from '@nestjs/common';
-import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Delete, Get, Post, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { ApiBody, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 import { CreateTagDto } from './tags.dto';
 import { TagsService } from './tags.service';
@@ -12,8 +12,9 @@ export class TagsController {
   @Get('/')
   @ApiResponse({ status: 200, description: 'Get tags successfully.' })
   @ApiResponse({ status: 404, description: 'Tags not found.' })
-  getTags() {
-    const result = this.tagsService.getTags();
+  @ApiQuery({ name: 'name', required: false, description: 'name of tag'})
+  getTags(@Query('name') tagName: string) {
+    const result = this.tagsService.getTags(tagName);
     return result;
   }
 

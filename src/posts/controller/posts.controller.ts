@@ -18,7 +18,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PostsService } from '../service/posts.service';
-import { CreatePostDto, updatePostDto } from '../posts.dto';
+import { CreatePostDto, UpdatePostDto, AddTagsDto } from '../posts.dto';
+import { log } from 'console';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -44,29 +45,12 @@ export class PostsController {
     return posts;
   }
 
-  @Get('/id/:id')
+  @Get('/:id')
   @ApiParam({ name: 'id', required: true, description: 'id of post' })
   @ApiResponse({ status: 200, description: 'Get posts successfully.' })
   @ApiResponse({ status: 404, description: 'Posts not found.' })
   getPostById(@Param('id', ParseIntPipe) id: number) {
     const result = this.postsService.getPostById(id);
-    return result;
-  }
-
-  @Get('/favorite/:userId')
-  @ApiResponse({ status: 200, description: 'Get posts successfully.' })
-  @ApiResponse({ status: 404, description: 'Posts not found.' })
-  @ApiParam({ name: 'userId', required: true, description: 'user id' })
-  getFavoritePostByUserId(@Param('userId', ParseIntPipe) userId: number) {
-    const result = this.postsService.getFavoritePostByUserId(userId);
-    return result;
-  }
-
-  @Get('/user/:id')
-  @ApiResponse({ status: 200, description: 'Get posts successfully.' })
-  @ApiResponse({ status: 404, description: 'Posts not found.' })
-  getPostByUserId(@Param('id') id: number) {
-    const result = this.postsService.getPostsByUserId(id);
     return result;
   }
 
@@ -86,9 +70,9 @@ export class PostsController {
   @Put('/:id')
   @ApiResponse({ status: 200, description: 'Update post successfully.' })
   @ApiParam({ name: 'id', required: true, description: 'id of post' })
-  @ApiBody({ type: CreatePostDto })
+  @ApiBody({ type: UpdatePostDto })
   updatePostById(
-    @Body() updatePost: updatePostDto,
+    @Body() updatePost: UpdatePostDto,
     @Param('id', ParseIntPipe) id: number
   ) {
     const result = this.postsService.updatePostById(id, updatePost);
@@ -105,21 +89,12 @@ export class PostsController {
     return result;
   }
 
-  @Delete('/name')
-  @ApiResponse({ status: 200, description: 'Delete post successfully.' })
-  @ApiResponse({ status: 404, description: 'Post not found.' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiQuery({ name: 'name', required: true, description: 'name of post' })
-  deletePostByName(@Query('name') name: string) {
-    const result = this.postsService.deletePostByName(name);
-    return result;
-  }
-
-  @Put('/addViews/:id')
+  @Put('/addTag/:id')
   @ApiResponse({ status: 200, description: 'Update post successfully.' })
-  @ApiParam({ name: 'id', required: true, description: 'id of post' })
-  addViews(@Param('id', ParseIntPipe) id: number) {
-    const result = this.postsService.addViews(id);
+  @ApiBody({ type: AddTagsDto })
+  addTag(@Param('id', ParseIntPipe) id: number, @Body('tags') tags: AddTagsDto) {
+    console.log(tags);
+    const result = this.postsService.addTagToPost(id, tags);
     return result;
   }
 }

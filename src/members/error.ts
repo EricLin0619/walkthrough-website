@@ -17,3 +17,9 @@ export class UserExistedError extends HttpError {
     super(409, 'User has existed')
   }
 }
+
+export class PostNotFoundError extends HttpError {
+  constructor() {
+    super(404, 'Post Not Found')
+  }
+}

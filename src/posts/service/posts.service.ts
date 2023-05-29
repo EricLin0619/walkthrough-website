@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma, User, Post } from '@prisma/client';
 import { PostExistedError, PostsNotFoundError } from '../error';
-import { CreatePostDto } from '../posts.dto';
+import { CreatePostDto, AddTagsDto, UpdatePostDto } from '../posts.dto';
 
 @Injectable()
 export class PostsService {
   constructor(private prisma: PrismaService) { }
+
   async getPosts(tags: Array<string>, postName) {
     const result = await this.prisma.post.findMany({
       include: {
@@ -27,15 +28,6 @@ export class PostsService {
       throw new PostsNotFoundError()
     }
     return result
-  }
-
-  async getPostsByUserId(id: number) {
-    const result = await this.prisma.post.findMany({ where: { authorId: 1 } });
-
-    if (result.length === 0) {
-      throw new PostsNotFoundError()
-    }
-    return result;
   }
 
   async createPost(data: CreatePostDto) {
@@ -62,21 +54,46 @@ export class PostsService {
     if (!result) {
       throw new PostsNotFoundError()
     }
+    await this.addViews(id)
     return result
   }
 
-  async updatePostById(id: number, data: Prisma.PostUpdateInput) {
+  async updatePostById(id: number, data: UpdatePostDto) {
+    const tagsData = data.tags.map(tag => {
+      return {
+        id: Number(tag)
+      }
+    })
     const result = await this.prisma.post.update({
-      where: { id },
+      where: { id: id },
       data: {
         ...data,
         tags: {
-          connect: {
-            id: 5 
-          }
+          deleteMany: {},
+          connect: tagsData
+        }
+      }
+    });
+
+    return result
+  }
+
+  async addTagToPost(id: number, tags) {
+    const tagsData = tags.map(tag => {
+      return {
+        id: Number(tag)
+      }
+    })
+
+    const result = await this.prisma.post.update({
+      where: { id },
+      data: {
+        tags: {
+          connect: tagsData
         }
       }
     }); 
+
     return result
   }
 
@@ -87,32 +104,6 @@ export class PostsService {
     }
 
     const result = await this.prisma.post.delete({ where: { id } });
-    return result
-  }
-
-  async deletePostByName(name: string) {
-    const post = await this.prisma.post.findFirst({ where: { name } });
-    if (!post) {
-      throw new PostsNotFoundError()
-    }
-
-    const result = await this.deletePostById(post.id);
-    return result
-  }
-
-  async getFavoritePostByUserId(userId: number) {
-    const result = await this.prisma.post.findMany({
-      include: {
-        favoriteusers: true
-      },
-      where: {
-        favoriteusers: {
-          some: {
-            userId
-          }
-        },
-      }
-    });
     return result
   }
 
@@ -130,4 +121,5 @@ export class PostsService {
 }
 
 // 52 if tag input is array
+// 想要用關聯的做query但不想要屬性被顯示出來
 // 93 need to delect specidied column
