@@ -17,3 +17,9 @@ export class PostsNotFoundError extends HttpError {
     super(404, 'Posts not found')
   }
 }
+
+export class CommentsNotFoundError extends HttpError {
+  constructor() {
+    super(404, 'Comments not found')
+  }
+}
