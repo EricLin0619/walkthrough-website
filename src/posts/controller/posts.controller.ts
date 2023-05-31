@@ -7,7 +7,6 @@ import {
   Put,
   Param,
   Query,
-  ParseArrayPipe,
   ParseIntPipe,
 } from '@nestjs/common';
 import {
@@ -19,7 +18,6 @@ import {
 } from '@nestjs/swagger';
 import { PostsService } from '../service/posts.service';
 import { CreatePostDto, UpdatePostDto, AddTagsDto } from '../posts.dto';
-import { log } from 'console';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -96,5 +94,16 @@ export class PostsController {
     console.log(tags);
     const result = this.postsService.addTagToPost(id, tags);
     return result;
+  }
+
+  @Get('/comments/:id')
+  @ApiResponse({ status: 200, description: 'Get comments successfully.' })
+  @ApiResponse({ status: 404, description: 'Comments not found.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.'})
+  @ApiParam({ name: 'id', required: true, description: 'id of post' })
+  getCommentsById(@Param('id', ParseIntPipe) id: number) {
+    const result = this.postsService.getCommentsById(id);
+    return result
   }
 }

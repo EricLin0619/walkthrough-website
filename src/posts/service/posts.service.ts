@@ -1,39 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma, User, Post } from '@prisma/client';
-import { PostExistedError, PostsNotFoundError } from '../error';
+import {
+  CommentsNotFoundError,
+  PostExistedError,
+  PostsNotFoundError,
+} from '../error';
 import { CreatePostDto, AddTagsDto, UpdatePostDto } from '../posts.dto';
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async getPosts(tags: Array<string>, postName) {
     const result = await this.prisma.post.findMany({
       include: {
-        tags: true
+        tags: true,
       },
       where: {
         name: postName,
         tags: {
           some: {
             name: {
-              in: tags
-            }
-          }
-        }
-      }
-    })
+              in: tags,
+            },
+          },
+        },
+      },
+    });
     if (result.length === 0) {
-      throw new PostsNotFoundError()
+      throw new PostsNotFoundError();
     }
-    return result
+    return result;
   }
 
   async createPost(data: CreatePostDto) {
-    const postExited = await this.prisma.post.findFirst({ where: { name: data.name } });
+    const postExited = await this.prisma.post.findFirst({
+      where: { name: data.name },
+    });
     if (postExited) {
-      throw new PostExistedError()
+      throw new PostExistedError();
     }
 
     const result = await this.prisma.post.create({
@@ -41,70 +47,80 @@ export class PostsService {
         ...data,
         tags: {
           connect: {
-            id: 1 // array of tags
-          }
-        }
-      }
+            id: 1, // array of tags
+          },
+        },
+      },
     });
-    return result
+    return result;
   }
 
   async getPostById(id: number) {
     const result = await this.prisma.post.findFirst({ where: { id } });
     if (!result) {
-      throw new PostsNotFoundError()
+      throw new PostsNotFoundError();
     }
-    await this.addViews(id)
-    return result
+    await this.addViews(id);
+    return result;
   }
 
   async updatePostById(id: number, data: UpdatePostDto) {
-    const tagsData = data.tags.map(tag => {
+    const post = await this.prisma.post.findFirst({ where: { id } });
+    if (!post) {
+      throw new PostsNotFoundError();
+    }
+    
+    const tagsData = data.tags.map((tag) => {
       return {
-        id: Number(tag)
-      }
-    })
+        id: Number(tag),
+      };
+    });
     const result = await this.prisma.post.update({
       where: { id: id },
       data: {
         ...data,
         tags: {
           deleteMany: {},
-          connect: tagsData
-        }
-      }
+          connect: tagsData,
+        },
+      },
     });
 
-    return result
+    return result;
   }
 
   async addTagToPost(id: number, tags) {
-    const tagsData = tags.map(tag => {
+    const post = await this.prisma.post.findFirst({ where: { id } })
+    if (!post) {
+      throw new PostsNotFoundError();
+    }
+
+    const tagsData = tags.map((tag) => {
       return {
-        id: Number(tag)
-      }
-    })
+        id: Number(tag),
+      };
+    });
 
     const result = await this.prisma.post.update({
       where: { id },
       data: {
         tags: {
-          connect: tagsData
-        }
-      }
-    }); 
+          connect: tagsData,
+        },
+      },
+    });
 
-    return result
+    return result;
   }
 
   async deletePostById(id: number) {
     const post = await this.prisma.post.findFirst({ where: { id } });
     if (!post) {
-      throw new PostsNotFoundError()
+      throw new PostsNotFoundError();
     }
 
     const result = await this.prisma.post.delete({ where: { id } });
-    return result
+    return result;
   }
 
   async addViews(id: number) {
@@ -112,11 +128,28 @@ export class PostsService {
       where: { id },
       data: {
         views: {
-          increment: 1
-        }
-      }
+          increment: 1,
+        },
+      },
     });
-    return result
+    return result;
+  }
+
+  async getCommentsById(id: number) {
+    const result = await this.prisma.comment.findMany({
+      where: {
+        postId: id,
+      },
+      select: {
+        id: true,
+        body: true,
+      },
+    });
+
+    if (result.length === 0) {
+      throw new CommentsNotFoundError();
+    }
+    return result;
   }
 }
 
