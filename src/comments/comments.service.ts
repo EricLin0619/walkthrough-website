@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCommentDto } from './comments.dto';
+import { CommentNotFoundError } from './error';
 
 @Injectable()
 export class CommentsService {
@@ -54,6 +55,10 @@ export class CommentsService {
       }
     })
 
+    if (!comment) {
+      throw new CommentNotFoundError()
+    }
+
     return comment
   }
 
@@ -78,6 +83,11 @@ export class CommentsService {
   }
 
   async updateCommentById(id: number, data: Prisma.CommentUpdateInput) {
+    const result = await this.getCommentById(id)
+    if (!result) {
+      throw new CommentNotFoundError()
+    }
+
     const comment = await this.prismaService.comment.update({
       where: {
         id
@@ -89,6 +99,11 @@ export class CommentsService {
   }
 
   async deleteCommentById(id: number) {
+    const result = await this.getCommentById(id)
+    if (!result) {
+      throw new CommentNotFoundError()
+    }
+    
     const comment = await this.prismaService.comment.delete({
       where: {
         id
