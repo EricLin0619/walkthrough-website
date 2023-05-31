@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service'
 import { Prisma } from '@prisma/client';
 import { UpdateUserByIdDto } from '../dto/user.dto';
-import { UserNotFoundError, UserExistedError } from '../error';
+import { UserNotFoundError, UserExistedError, PostNotFoundError } from '../error';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -36,9 +36,34 @@ export class UsersService {
     return user
   }
 
+  async getPostsByUserId(id: number) {
+    const posts = await this.prisma.post.findMany({ where: { authorId: id } })
+    if (!posts) {
+      throw new PostNotFoundError()
+    }
+    
+    return posts
+  }
+
+  async getFavoritePostsByUserId(id: number) {
+    const posts = await this.prisma.post.findMany({
+      include: {
+        tags: true
+      },
+      where: {
+        favoriteusers: { 
+          some: { 
+            userId: id
+           }
+        }
+      }
+    })
+    return posts
+  }
+
   async createUser(user: Prisma.UserCreateInput) {
     const userExist = await this.prisma.user.findFirst({where: {email: user.email}})
-    if (!userExist){
+    if (userExist){
       throw new UserExistedError()
     }
     user.password = await bcrypt.hash(user.password, 10)

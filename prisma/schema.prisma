@@ -18,50 +18,25 @@ model Post {
   slug String
   author User @relation(fields: [authorId], references: [id])
   authorId Int
-  views String
-  tags PostTag[]
+  views Int
+  tags Tag[]
   favoriteusers Favorite[]
   comments Comment[]
-}
-
-model PostTag {
-  post Post @relation(fields: [postId], references: [id])
-  postId Int
-  tag Tag @relation(fields: [tagId], references: [id])
-  tagId Int
-  @@id([postId, tagId])
 }
 
 model Tag {
   id Int @default(autoincrement()) @id
   name String
-  posts PostTag[]
-  Games GameTag[]
-}
-
-model PermissionGame {
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  game Game @relation(fields: [gameId], references: [id])
-  gameId Int
-  @@id([userId, gameId])
-}
-
-model GameTag {
-  tag Tag @relation(fields: [tagId], references: [id])
-  tagId Int
-  game Game @relation(fields: [gameId], references: [id])
-  gameId Int
-  @@id([tagId, gameId])
+  posts Post[]
+  Games Game[]
 }
 
 model Game {
   id Int @default(autoincrement()) @id
   name String
-  Tags GameTag[]
-  administrator User @relation(fields: [userId], references: [id])
+  Tags Tag[]
   userId Int
-  permissionGame PermissionGame[]
+  gameAdmin User[]
 }
 
 
@@ -71,11 +46,10 @@ model User {
   is_admin Boolean
   email String @unique
   password String
-  post Post[]
+  posts Post[]
   favoritePost Favorite[]
-  adminGame Game[]
   comments Comment[]
-  permissionGame PermissionGame[]
+  permissionGame Game[]
 }
 
 model Favorite {
