@@ -60,7 +60,7 @@ export class PostsController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 409, description: 'Post has existed.' })
   @ApiBody({ type: CreatePostDto })
-  createPost(@Body() createPost: CreatePostDto, tags: Array<string>) {
+  createPost(@Body() createPost: CreatePostDto) {
     const post = this.postsService.createPost(createPost);
     return post;
   }

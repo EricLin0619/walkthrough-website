@@ -20,11 +20,14 @@ export class CreatePostDto {
 
   @ApiProperty()
   authorId: number;
+
+  @ApiProperty()
+  tags?: Array<string>;
 }
 
 export class UpdatePostDto extends CreatePostDto {
   @ApiProperty()
-  tags: Array<number>;
+  tags: Array<string>;
 }
 
 export class AddTagsDto {

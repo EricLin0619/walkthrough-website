@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma, User, Post } from '@prisma/client';
 import {
   CommentsNotFoundError,
   PostExistedError,
   PostsNotFoundError,
 } from '../error';
-import { CreatePostDto, AddTagsDto, UpdatePostDto } from '../posts.dto';
+import { CreatePostDto, UpdatePostDto } from '../posts.dto';
 
 @Injectable()
 export class PostsService {
@@ -42,13 +41,18 @@ export class PostsService {
       throw new PostExistedError();
     }
 
+    const tagsData = data.tags.map((tag) => {
+      return {
+        where: { name: tag },
+        create: { name: tag }
+      };
+    });
+
     const result = await this.prisma.post.create({
       data: {
         ...data,
         tags: {
-          connect: {
-            id: 1, // array of tags
-          },
+          connectOrCreate: tagsData
         },
       },
     });
@@ -72,16 +76,17 @@ export class PostsService {
     
     const tagsData = data.tags.map((tag) => {
       return {
-        id: Number(tag),
+        where: { name: tag },
+        create: { name: tag }
       };
     });
     const result = await this.prisma.post.update({
-      where: { id: id },
+      where: { id },
       data: {
         ...data,
         tags: {
           deleteMany: {},
-          connect: tagsData,
+          connectOrCreate: tagsData,
         },
       },
     });
